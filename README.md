@@ -1,2 +1,4 @@
-# fuel-plugin-oss_ldap
-LDAP for fuel slave nodes (auth+sudo)
+fuel-plugin-oss_ldap
+============
+
+Plugin description

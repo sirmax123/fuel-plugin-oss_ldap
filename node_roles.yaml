@@ -1,0 +1,21 @@
+oss_ldap:
+  name: 'LDAP server'
+  description: 'Install OpenLdap Server'
+  has_primary: true
+  public_ip_required: false
+  weight: 100
+  limits:
+    max: 2
+    recommended: 2
+  conflicts:
+    - controller
+    - compute
+    - cinder
+    - ceph-osd
+  # 'update_required' is needed to make sure that the already deployed nodes
+  # are updated in the same run as the new nodes. The 'reexecute_on' stanza
+  # doesn't guarantee this since the reexecuted tasks are run after the new
+  # nodes are deployed.
+  update_required:
+    - primary-oss_ldap
+    - oss_ldap

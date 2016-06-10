@@ -1,0 +1,13 @@
+- id: "ldap"
+  default_mapping: "management"
+  properties:
+    subnet: true
+    gateway: false
+    vip:
+       - name: "oss_ldap_vip_mgmt"
+         namespace: "haproxy"
+         alias: "oss_ldap"
+         node_roles:
+           - "oss_ldap"
+           - "primary-oss_ldap"
+
