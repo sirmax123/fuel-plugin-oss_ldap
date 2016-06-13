@@ -19,7 +19,7 @@ $corosync_roles       = [$plugin_name, "primary-${plugin_name}"]
 $oss_ldp              = hiera_hash('oss_ldap')
 $network_metadata     = hiera('network_metadata')
 $oss_ldap_nodes       = get_nodes_hash_by_roles($network_metadata, ['oss_ldap', 'primary-oss_ldap'])
-$oss_ldap_nodes_count = count($es_nodes)
+$oss_ldap_nodes_count = count($oss_ldap_nodes)
 $vip_name             = 'oss_ldap_vip_mgmt'
 
 if ! $network_metadata['vips'][$vip_name] {
