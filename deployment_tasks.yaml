@@ -103,7 +103,7 @@
   type: puppet
   role: [primary-oss_ldap]
   requires: [post_deployment_start]
-  required_for: [oss_ldap-quorum, post_deployment_end]
+  required_for: [oss_ldap-enable-quorum, post_deployment_end]
   parameters:
     puppet_manifest: puppet/manifests/provision_services.pp
     puppet_modules: puppet/modules
