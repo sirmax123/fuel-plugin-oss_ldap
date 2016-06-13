@@ -27,17 +27,7 @@
     strategy:
       type: parallel
 
-- id: oss_ldap-enable-quorum
-  type: puppet
-  role: [primary-oss_ldap]
-  requires: [post_deployment_start]
-  required_for: [post_deployment_end]
-  parameters:
-    puppet_manifest: "puppet/manifests/enable_quorum.pp"
-    puppet_modules: "puppet/modules"
-    timeout: 120
-  reexecute_on:
-    - deploy_changes
+
 
 # This task needs to be reexecuted to adapt configuration variables depending
 # on the number of nodes in the cluster
@@ -78,6 +68,16 @@
     - deploy_changes
 
 
+- id: oss_ldap-virtual-ip
+  type: puppet
+  groups: [primary-oss_ldap, oss_ldap]
+  required_for: [deploy_end]
+  requires: [oss_ldap-cluster]
+  parameters:
+    puppet_manifest: "puppet/modules/osnailyfacter/modular/virtual_ips/virtual_ips.pp"
+    puppet_modules: "puppet/modules"
+    timeout: 3600
+
 
 # This task needs to be reexecuted to reconfigure HAProxy backends
 - id: oss_ldap-haproxy
@@ -95,12 +95,31 @@
 
 
 
-- id: oss_ldap-virtual-ip
+
+
+
+
+- id: oss_ldap-provision-services
   type: puppet
-  groups: [primary-oss_ldap, oss_ldap]
-  required_for: [deploy_end]
-  requires: [oss_ldap-cluster]
+  role: [primary-oss_ldap]
+  requires: [post_deployment_start]
+  required_for: [oss_ldap-quorum, post_deployment_end]
   parameters:
-    puppet_manifest: "puppet/modules/osnailyfacter/modular/virtual_ips/virtual_ips.pp"
+    puppet_manifest: puppet/manifests/provision_services.pp
+    puppet_modules: puppet/modules
+    timeout: 600
+  reexecute_on:
+    - deploy_changes
+
+
+- id: oss_ldap-enable-quorum
+  type: puppet
+  role: [primary-oss_ldap]
+  requires: [post_deployment_start]
+  required_for: [post_deployment_end]
+  parameters:
+    puppet_manifest: "puppet/manifests/enable_quorum.pp"
     puppet_modules: "puppet/modules"
-    timeout: 3600
+    timeout: 120
+  reexecute_on:
+    - deploy_changes

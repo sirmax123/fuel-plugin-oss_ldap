@@ -12,9 +12,10 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 #
+notice('MODULAR: oss_ldap enable_quorum.pp')
 
 prepare_network_config(hiera('network_scheme', {}))
-$corosync_roles = hiera_array('oss::corosync_roles')
+$corosync_roles = hiera_array('oss_ldap::corosync_roles')
 $network_metadata = hiera('network_metadata')
 $nodes = get_nodes_hash_by_roles($network_metadata, $corosync_roles)
 

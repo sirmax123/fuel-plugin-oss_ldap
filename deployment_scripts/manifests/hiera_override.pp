@@ -12,6 +12,8 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 #
+notice('MODULAR: oss_ldap hiera_override.pp')
+
 $hiera_dir            = '/etc/hiera/plugins'
 $plugin_name          = 'oss_ldap'
 $plugin_yaml          = "${plugin_name}.yaml"
@@ -31,7 +33,7 @@ $vip = $network_metadata['vips'][$vip_name]['ipaddr']
 
 
 $calculated_content = inline_template('
-oss::corosync_roles:
+oss_ldap::corosync_roles:
 <%
 @corosync_roles.each do |crole|
 %>  - <%= crole %>
