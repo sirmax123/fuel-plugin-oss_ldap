@@ -54,9 +54,9 @@
     - deploy_changes
 
 
-- id: lma-es-firewall
+- id: oss_ldap-firewall
   type: puppet
-  groups: [primary-elasticsearch_kibana, elasticsearch_kibana]
+  groups: [primary-oss_ldap, oss_ldap]
   required_for: [deploy_end]
   requires: [netconfig]
   parameters:
@@ -65,14 +65,42 @@
     timeout: 3600
 
 
-- id: lma-es-cluster
+- id: oss_ldap-cluster
   type: puppet
-  groups: [primary-elasticsearch_kibana, elasticsearch_kibana]
+  groups: [primary-oss_ldap, oss_ldap]
   required_for: [cluster-haproxy]
-  requires: [lma-es-firewall]
+  requires: [oss_ldap-firewall]
   parameters:
     puppet_manifest: "puppet/manifests/cluster.pp"
     puppet_modules: "puppet/modules"
     timeout: 3600
   reexecute_on:
     - deploy_changes
+
+
+
+# This task needs to be reexecuted to reconfigure HAProxy backends
+- id: oss_ldap-haproxy
+  type: puppet
+  groups: [primary-oss_ldap, oss_ldap]
+  requires: [cluster-haproxy, oss_ldap-virtual-ip]
+  required_for: [deploy_end]
+  parameters:
+    puppet_manifest: "puppet/manifests/haproxy.pp"
+    puppet_modules: "puppet/modules"
+    timeout: 120
+  reexecute_on:
+    - deploy_changes
+
+
+
+
+- id: oss_ldap-virtual-ip
+  type: puppet
+  groups: [primary-oss_ldap, oss_ldap]
+  required_for: [deploy_end]
+  requires: [oss_ldap-cluster]
+  parameters:
+    puppet_manifest: "puppet/modules/osnailyfacter/modular/virtual_ips/virtual_ips.pp"
+    puppet_modules: "puppet/modules"
+    timeout: 3600
