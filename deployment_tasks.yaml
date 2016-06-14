@@ -38,7 +38,7 @@
   required_for: [logging, oss_ldap-cluster, oss_ldap-haproxy]
   parameters:
     puppet_manifest: "puppet/manifests/hiera_override.pp"
-    puppet_modules: "puppet/modules"
+    puppet_modules: "puppet/modules:/etc/puppet/modules"
     timeout: 120
   reexecute_on:
     - deploy_changes
@@ -51,7 +51,7 @@
   requires: [netconfig]
   parameters:
     puppet_manifest: "puppet/manifests/firewall.pp"
-    puppet_modules: "puppet/modules"
+    puppet_modules: "puppet/modules:/etc/puppet/modules"
     timeout: 3600
 
 
@@ -62,7 +62,7 @@
   requires: [oss_ldap-firewall]
   parameters:
     puppet_manifest: "puppet/manifests/cluster.pp"
-    puppet_modules: "puppet/modules"
+    puppet_modules: "puppet/modules:/etc/puppet/modules"
     timeout: 3600
   reexecute_on:
     - deploy_changes
@@ -75,7 +75,7 @@
   requires: [oss_ldap-cluster]
   parameters:
     puppet_manifest: "puppet/modules/osnailyfacter/modular/virtual_ips/virtual_ips.pp"
-    puppet_modules: "puppet/modules"
+    puppet_modules: "puppet/modules:/etc/puppet/modules"
     timeout: 3600
 
 
@@ -87,7 +87,7 @@
   required_for: [deploy_end]
   parameters:
     puppet_manifest: "puppet/manifests/haproxy.pp"
-    puppet_modules: "puppet/modules"
+    puppet_modules: "puppet/modules:/etc/puppet/modules"
     timeout: 120
   reexecute_on:
     - deploy_changes
@@ -106,7 +106,7 @@
   required_for: [oss_ldap-enable-quorum, post_deployment_end]
   parameters:
     puppet_manifest: puppet/manifests/provision_services.pp
-    puppet_modules: puppet/modules
+    puppet_modules: puppet/modules:/etc/puppet/modules
     timeout: 600
   reexecute_on:
     - deploy_changes
@@ -119,7 +119,7 @@
   required_for: [post_deployment_end]
   parameters:
     puppet_manifest: "puppet/manifests/enable_quorum.pp"
-    puppet_modules: "puppet/modules"
+    puppet_modules: "puppet/modules:/etc/puppet/modules"
     timeout: 120
   reexecute_on:
     - deploy_changes

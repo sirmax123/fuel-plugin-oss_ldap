@@ -12,7 +12,6 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 #
-notice('MODULAR: oss_ldap provision_services.pp')
 
 $deployment_id = hiera('deployment_id')
 $master_ip = hiera('master_ip')

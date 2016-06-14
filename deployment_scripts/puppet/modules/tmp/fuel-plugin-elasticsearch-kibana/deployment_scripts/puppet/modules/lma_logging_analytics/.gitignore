@@ -1,0 +1,5 @@
+spec/fixtures/modules/*
+spec/fixtures/manifests/*
+Gemfile.lock
+files/kibana/src
+.bundle
