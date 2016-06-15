@@ -14,31 +14,30 @@
 #
 notice('MODULAR: oss_ldap haproxy.pp')
 
-$role_name = 'elasticsearch_kibana'
-$es_port = '9200'
-$nginx_port = '80'
-$vip = hiera('lma::elasticsearch::vip')
+$role_name = 'oss_ldap'
+$ldap_port = '636'
+$vip = hiera('oss::ldap::vip')
 $roles = [ $role_name , "primary-${role_name}"]
-$es_nodes = get_nodes_hash_by_roles(hiera_hash('network_metadata'), $roles)
-$es_address_map = get_node_to_ipaddr_map_by_network_role($es_nodes, 'elasticsearch')
-$es_nodes_ips = values($es_address_map)
-$es_nodes_names = keys($es_address_map)
-notice($es_address_map)
-notice($es_nodes_ips)
+$oss_ldap_nodes = get_nodes_hash_by_roles(hiera_hash('network_metadata'), $roles)
+$oss_ldap_address_map = get_node_to_ipaddr_map_by_network_role($oss_ldap_nodes, 'oss_ldap')
+$oss_ldap_nodes_ips = values($oss_ldap_address_map)
+$oss_ldap_nodes_names = keys($oss_ldap_address_map)
+notice($oss_ldap_address_map)
+notice($os_ldap_nodes_ips)
 
 Openstack::Ha::Haproxy_service {
-  server_names        => $es_nodes_names,
-  ipaddresses         => $es_nodes_ips,
+  server_names        => $oss_ldap_nodes_names,
+  ipaddresses         => $pss_ldap_nodes_ips,
   public              => false,
   public_ssl          => false,
   internal            => true,
   internal_virtual_ip => $vip,
 }
 
-openstack::ha::haproxy_service { 'elasticsearch-rest':
+openstack::ha::haproxy_service { 'oss_ldap':
   order                  => '920',
-  listen_port            => $es_port,
-  balancermember_port    => $es_port,
+  listen_port            => $ldap_port,
+  balancermember_port    => $ldap_port,
   balancermember_options => 'check inter 10s fastinter 2s downinter 3s rise 3 fall 3',
   haproxy_config_options => {
     'option'  => ['httplog', 'http-keep-alive', 'prefer-last-server', 'dontlog-normal'],
@@ -47,14 +46,3 @@ openstack::ha::haproxy_service { 'elasticsearch-rest':
   }
 }
 
-openstack::ha::haproxy_service { 'kibana':
-  order                  => '921',
-  listen_port            => $nginx_port,
-  balancermember_port    => $nginx_port,
-  balancermember_options => 'check inter 10s fastinter 2s downinter 3s rise 3 fall 3',
-  haproxy_config_options => {
-    'option'  => ['httplog', 'http-keep-alive', 'prefer-last-server', 'dontlog-normal'],
-    'balance' => 'roundrobin',
-    'mode'    => 'http',
-  }
-}

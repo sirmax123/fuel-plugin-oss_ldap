@@ -74,7 +74,7 @@
   required_for: [deploy_end]
   requires: [oss_ldap-cluster]
   parameters:
-    puppet_manifest: "puppet/modules/osnailyfacter/modular/virtual_ips/virtual_ips.pp"
+    puppet_manifest: "/etc/puppet/modules/osnailyfacter/modular/virtual_ips/virtual_ips.pp"
     puppet_modules: "puppet/modules:/etc/puppet/modules"
     timeout: 3600
 
