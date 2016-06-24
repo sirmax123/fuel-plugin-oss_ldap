@@ -1,0 +1,8 @@
+dn: olcDatabase={0}config,cn=config
+changetype: modify
+add: olcSyncRepl
+olcSyncRepl: rid=001 provider=ldaps://ldap1  binddn="cn=admin,cn=config" bindmethod=simple credentials=<%= @ldap_config_rootpw %> searchbase="cn=config" type=refreshAndPersist retry="5 5 300 5"       timeout=1 tls_reqcert=allow tls_cacert=/etc/ssl/certs/rootca.crt
+olcSyncRepl: rid=002 provider=ldaps://ldap2  binddn="cn=admin,cn=config" bindmethod=simple credentials=<%= @ldap_config_rootpw %> searchbase="cn=config" type=refreshAndPersist retry="5 5 300 5"       timeout=1 tls_reqcert=allow tls_cacert=/etc/ssl/certs/rootca.crt
+-
+add: olcMirrorMode
+olcMirrorMode: TRUE
