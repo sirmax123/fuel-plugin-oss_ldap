@@ -38,11 +38,54 @@ openstack::ha::haproxy_service { 'oss_ldap':
   order                  => '920',
   listen_port            => $ldap_port,
   balancermember_port    => $ldap_port,
-  balancermember_options => 'check inter 10s fastinter 2s downinter 3s rise 3 fall 3',
+  server_names           => ["ldap1","ldap2"],
+#  balancermember_options => 'check inter 10s fastinter 2s downinter 3s rise 3 fall 3',
+#  haproxy_config_options => {
+#    'option'  => [],
+#    'balance' => 'first',
+#    'mode'    => 'tcp',
+#  }
   haproxy_config_options => {
-    'option'  => ['httplog', 'http-keep-alive', 'prefer-last-server', 'dontlog-normal'],
-    'balance' => 'roundrobin',
-    'mode'    => 'http',
-  }
+    'option'         => ['tcplog','clitcpka','srvtcpka', 'ldap-check'],
+    'balance'        => 'first',
+    'mode'           => 'tcp',
+    'timeout server' => '28801s',
+    'timeout client' => '28801s'
+  },
+  balancermember_options => 'check inter 20s fastinter 2s downinter 2s rise 3 fall 3',
+
 }
 
+
+
+### example from ldap-ad plugin, tmp, MBF!
+#$plugin_name           = "openldap-ad"
+#notice("MODULAR: ${plugin_name}/openldap_haproxy.pp")
+#
+#$plugin_settings       = hiera($plugin_name, false)
+#
+#if $plugin_settings {
+#  $internal_virtual_ip = hiera('management_vip')
+#  $nodes_array         = hiera_array('nodes')
+#  $server_names        = nodes_with_roles($nodes_array, ['primary-controller', 'controller'], 'name')
+#  $ipaddresses         = nodes_with_roles($nodes_array, ['primary-controller', 'controller'], 'internal_address')
+#
+#  openstack::ha::haproxy_service { 'openldap':
+#    internal_virtual_ip => $internal_virtual_ip,
+#    ipaddresses         => $ipaddresses,
+#    server_names        => $server_names,
+#    order                  => '177',
+#    listen_port            => 389,
+#    balancermember_port    => 389,
+#    define_backups         => true,
+#    haproxy_config_options => {
+#      'option'         => ['tcplog','clitcpka','srvtcpka', 'ldap-check'],
+#      'balance'        => 'leastconn',
+#      'mode'           => 'tcp',
+#      'timeout server' => '28801s',
+#      'timeout client' => '28801s'
+#    },
+#    balancermember_options => 'check inter 20s fastinter 2s downinter 2s rise 3 fall 3',
+#  }
+#
+#}

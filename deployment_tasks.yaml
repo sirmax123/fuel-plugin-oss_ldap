@@ -28,6 +28,19 @@
       type: parallel
 
 
+- id: oss_ldap-hosts
+  type: puppet
+  groups: [*]
+  required_for: [deploy_end]
+  requires: [cluster-haproxy]
+  parameters:
+    puppet_manifest: "puppet/manifests/ldap_hosts.pp"
+    puppet_modules: "puppet/modules:/etc/puppet/modules"
+    timeout: 120
+  reexecute_on:
+    - deploy_changes
+
+
 
 # This task needs to be reexecuted to adapt configuration variables depending
 # on the number of nodes in the cluster

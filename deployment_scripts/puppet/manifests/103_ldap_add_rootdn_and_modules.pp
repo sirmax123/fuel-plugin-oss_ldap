@@ -65,7 +65,7 @@ exec { "$::ldap_config::ldapmodify_ldapi -f /etc/ldap/module.ldif":
 exec { "$::ldap_config::ldapmodify_ldapi -f /etc/ldap/overley.ldif":
   cwd     => '/etc/ldap',
   path    => ['/usr/bin', '/usr/sbin',],
-  unless  => $::ldap_config::check_if_Overley_exist,
+  unless  => $::ldap_config::check_if_OverleyConfig_exist,
 } -> 
 
 
@@ -80,7 +80,20 @@ exec { "$::ldap_config::ldapmodify_ldapi -f /etc/ldap/ServerID.ldif":
   cwd     => '/etc/ldap',
   path    => ['/usr/bin', '/usr/sbin',],
   unless  => "$::ldap_config::check_if_ServerID_exist",
-}
+} ->
+
+#
+# Note: I'm not sure do we really need 2 steps with ServerID, will check '
+#
+file { '/etc/ldap/ServerID_2servers.ldif.erb':
+  ensure  => file,
+  content => template('ldap_config/ServerID_2servers.ldif.erb'),
+} ->
+
+exec { "$::ldap_config::ldapmodify_ldapi -f ServerID_2servers.ldif.erb":
+  cwd     => '/etc/ldap',
+  path    => ['/usr/bin', '/usr/sbin',],
+} ->
 
 
 
@@ -96,6 +109,19 @@ exec { "$::ldap_config::ldapmodify_ldapi -f /etc/ldap/ReplicaConfig_config.ldif"
 } ->
 
 
+file { '/etc/ldap/overley_fuel_domain.ldif.erb':
+  ensure  => file,
+  content => template('ldap_config/overley_fuel_domain.ldif.erb'),
+} ->
+
+
+exec { "$::ldap_config::ldapmodify_ldapi -f /etc/ldap/overley_fuel_domain.ldif.erb":
+  cwd     => '/etc/ldap',
+  path    => ['/usr/bin', '/usr/sbin',],
+  unless  => $::ldap_config::check_if_OverleyDomian_exist,
+} ->
+
+
 
 file { '/etc/ldap/ReplicaConfig_domain.ldif':
   ensure  => file,
@@ -106,7 +132,10 @@ exec { "$::ldap_config::ldapmodify_ldapi -f /etc/ldap/ReplicaConfig_domain.ldif"
   cwd     => '/etc/ldap',
   path    => ['/usr/bin', '/usr/sbin',],
   unless  => "$::ldap_config::check_if_ReplicaDomain_exist",
+
 }
+
+
 
 
 

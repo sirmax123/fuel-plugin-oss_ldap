@@ -1,0 +1,31 @@
+dn: uid=sirmax,ou=People,dc=customer_organization,dc=fuel_domain
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+uid: sirmax
+cn: Max Mazur
+sn: Mazur
+givenName: Mazur
+title: Max Mazur
+telephoneNumber: +38 067 341 80 70
+mobile: +38 067 341 80 70
+postalAddress: AddressLine1$AddressLine2$AddressLine3
+userPassword: {CRYPT}$6$DS/mzad5$EB.cNCLE7KB7OCPK1nU6aEA8HnQDLY1FPd3KaWPVqaNBtWhmh/4cOUgD1I8tQSFu41yy7jMXDrg9TDqlAbuLX.
+labeledURI: http://wiki.sirmax.noname.com.ua/
+loginShell: /usr/bin/sudosh
+uidNumber: 9999
+gidNumber: 9999
+homeDirectory: /home/sirmax
+description: This is me :)
+
+
+dn: cn=sirmax,ou=Group,dc=customer_organization,dc=fuel_domain
+changetype: add
+cn: sirmax
+objectClass: posixGroup
+gidNumber: 9999
+description: Fuel Users
+memberUid: sirmax

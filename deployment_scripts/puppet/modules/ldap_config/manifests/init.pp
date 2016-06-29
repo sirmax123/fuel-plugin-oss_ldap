@@ -21,11 +21,19 @@ class ldap_config() {
 
 
   $check_if_Moduel_exist        = '/usr/bin/ldapsearch -Y EXTERNAL  -H ldapi://  -b cn=config   "cn=module{*}"        | /bin/grep --color -E "olcModuleLoad: .*syncprov"'
-  $check_if_Overley_exist       = '/usr/bin/ldapsearch -Y EXTERNAL  -H ldapi://  -b cn=config   "olcOverlay=syncprov" | /bin/grep --color -E "olcOverlay: .*syncprov"'
-  $check_if_ServerID_exist      = '/usr/bin/ldapsearch -Y EXTERNAL  -H ldapi://  -b cn=config   "cn=config"           | /bin/grep --color -E "olcServerID: [0-9].*"'
-  $check_if_ReplicaConfig_exist = '/usr/bin/ldapsearch -Y EXTERNAL  -H ldapi://  -b cn=config   "olcDatabase=config"  | /bin/grep --color -E "olcSyncrepl: {[0-1]}rid=00[0-9] provider=ldaps://ldap[1-2]"'
-  $check_if_ReplicaDomain_exist = '/usr/bin/ldapsearch -Y EXTERNAL  -H ldapi://  -b cn=config   "olcDatabase={1}hdb"  | /bin/grep --color -E "olcSyncrepl: {[0-1]}rid=10[0-9] provider=ldaps://ldap[1-2]"'
 
+
+
+# /usr/bin/ldapsearch -Y EXTERNAL  -H ldapi://  -b olcOverlay={0}syncprov,olcDatabase={0}config,cn=config  "olcOverlay=syncprov"
+# /usr/bin/ldapsearch -Y EXTERNAL  -H ldapi://  -b olcOverlay={0}syncprov,olcDatabase={1}hdb,cn=config  "olcOverlay=syncprov"
+
+  $check_if_OverleyConfig_exist = '/usr/bin/ldapsearch -Y EXTERNAL  -H ldapi:// -b olcOverlay={0}syncprov,olcDatabase={0}config,cn=config "olcOverlay=syncprov" | /bin/grep --color -E "olcOverlay: .*syncprov"'
+  $check_if_OverleyDomain_exist = '/usr/bin/ldapsearch -Y EXTERNAL  -H ldapi:// -b olcOverlay={0}syncprov,olcDatabase={1}hdb,cn=config    "olcOverlay=syncprov" | /bin/grep --color -E "olcOverlay: .*syncprov"'
+#
+  $check_if_ServerID_exist      = '/usr/bin/ldapsearch -Y EXTERNAL  -H ldapi://  -b cn=config   "cn=config"                                                     | /bin/grep --color -E "olcServerID: [0-9].*"'
+  $check_if_ReplicaConfig_exist = '/usr/bin/ldapsearch -Y EXTERNAL  -H ldapi://  -b cn=config   "olcDatabase=config"                                            | /bin/grep --color -E "olcSyncrepl: {[0-1]}rid=00[0-9] provider=ldaps://ldap[1-2]"'
+  $check_if_ReplicaDomain_exist = '/usr/bin/ldapsearch -Y EXTERNAL  -H ldapi://  -b cn=config   "olcDatabase={1}hdb"                                            | /bin/grep --color -E "olcSyncrepl: {[0-1]}rid=10[0-9] provider=ldaps://ldap[1-2]"'
+#
 }
 
 # Wrapper for ldap_entry call

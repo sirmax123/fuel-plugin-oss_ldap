@@ -5,17 +5,9 @@ include ::ldap_config
 
 notice('DEBUG: ')
 
-$ldap_config_rootpw   =  $::ldap_config::rootpw
-$ldap_config_database = $::ldap_config::database
+$ldap_config_rootpw =  $::ldap_config::rootpw
 
-#Set Server ID (we always have 2 nodes)
-$r = hiera("role")
-if "$r" == "primary-oss_ldap"  {
-  $ldap_server_id = 1
-} else {
-  $ldap_server_id = 2
 
-}
 
 
 file { $::ldap_config::ldap_ssl_cert_dir:
@@ -61,8 +53,7 @@ class { 'openldap::client':
 class { 'openldap::utils': } ->
 
 class { 'openldap::server':
-  ldaps_ifs => ["ldap$ldap_server_id"],
-  ldap_ifs  => ["ldap$ldap_server_id"],
+  ldaps_ifs => ['/'],
   ssl_cert  => $::ldap_config::olcTLSCertificateFile,
   ssl_key   => $::ldap_config::olcTLSCertificateKeyFile,
   ssl_ca    =>  $::ldap_config::olcTLSCACertificateFile,
@@ -74,9 +65,36 @@ class { 'openldap::server':
   },
 }
 
-
 #
-#file { '/etc/default/slapd':
-#  ensure  => file,
-#  content => template('ldap_config/slapd.erb'),
-#}
+# It is not possible to edit cn=config db with existing code  because
+# puppet module can connect only using ldap:// or ldaps://  but not
+# using ldapi:///
+# So I have co configure access with such workaround
+#
+
+file { '/etc/ldap/rootpw':
+  ensure  => file,
+  content => template('ldap_config/rootpw.erb'),
+} -> 
+
+file { '/etc/ldap/rootdn':
+  ensure  => file,
+  content => template('ldap_config/rootdn.erb'),
+} ->
+
+exec { "$::ldap_config::ldapmodify_ldapi -f /etc/ldap/rootdn":
+  cwd     => '/etc/ldap',
+  path    => ['/usr/bin', '/usr/sbin',],
+  unless  => $::ldap_config::check_if_olcRootDN_exist,
+} ->
+
+exec { "$::ldap_config::ldapmodify_ldapi -f /etc/ldap/rootpw":
+  cwd     => '/etc/ldap',
+  path    => ['/usr/bin', '/usr/sbin',],
+  unless  => $::ldap_config::check_if_olcRootPW_exist,
+} 
+
+
+
+
+

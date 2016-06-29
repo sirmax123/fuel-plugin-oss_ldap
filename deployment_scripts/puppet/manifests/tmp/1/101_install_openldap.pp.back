@@ -5,27 +5,18 @@ include ::ldap_config
 
 notice('DEBUG: ')
 
-$ldap_config_rootpw   =  $::ldap_config::rootpw
-$ldap_config_database = $::ldap_config::database
-
-#Set Server ID (we always have 2 nodes)
-$r = hiera("role")
-if "$r" == "primary-oss_ldap"  {
-  $ldap_server_id = 1
-} else {
-  $ldap_server_id = 2
-
-}
-
-
-file { $::ldap_config::ldap_ssl_cert_dir:
+  file { $::ldap_config::ldap_ssl_cert_dir:
     ensure => 'directory',
     mode   => '755',
     owner  => 'root',
     group  => 'root',
-} ->
+  } ->
 
-file { $::ldap_config::olcTLSCertificateFile:
+#  $olcTLSCertificateFile    = "/etc/ldap/ssl/ldap.crt"
+#  $olcTLSCertificateKeyFile = "/etc/ldap/ssl/ldap.key"
+#  $olcTLSCACertificateFile  = "/etc/ssl/certs/rootca.crt"
+
+  file { $::ldap_config::olcTLSCertificateFile:
     source => 'puppet:///modules/ldap_ssl/CA/certs/ldap.crt',
     mode   => '644',
     owner  => 'root',
@@ -58,11 +49,11 @@ class { 'openldap::client':
 } ->
 
 
-class { 'openldap::utils': } ->
+class { 'openldap::utils': } -> 
 
+# ? olcTLSVerifyClient: never
 class { 'openldap::server':
-  ldaps_ifs => ["ldap$ldap_server_id"],
-  ldap_ifs  => ["ldap$ldap_server_id"],
+  ldaps_ifs => ['/'],
   ssl_cert  => $::ldap_config::olcTLSCertificateFile,
   ssl_key   => $::ldap_config::olcTLSCertificateKeyFile,
   ssl_ca    =>  $::ldap_config::olcTLSCACertificateFile,
@@ -72,11 +63,40 @@ class { 'openldap::server':
         rootpw    => $::ldap_config::rootpw
     }
   },
+  databases => {
+    "cn=config" => {
+        rootdn    => $::ldap_config::rootdn,
+        rootpw    => $::ldap_config::rootpw
+    }
+  }
+} 
+
+
+openldap::server::module { 'syncprov':
+  ensure => present,
+} 
+
+openldap::server::overlay { 'syncprov on cn=config':
+  ensure => present,
 }
 
 
-#
-#file { '/etc/default/slapd':
-#  ensure  => file,
-#  content => template('ldap_config/slapd.erb'),
-#}
+
+openldap::server::access {
+  suffix => 'cn=config'
+  'to attrs=userPassword,shadowLastChange by dn="cn=admin,dc=example,dc=com" on dc=example,dc=com':
+    access => 'write';
+  'to attrs=userPassword,shadowLastChange by anonymous on dc=example,dc=com':
+    access => 'auth';
+  'to attrs=userPassword,shadowLastChange by self on dc=example,dc=com':
+    access => 'write';
+  'to attrs=userPassword,shadowLastChange by * on dc=example,dc=com':
+    access => 'none';
+access = 
+}
+
+
+
+
+
+
