@@ -9,6 +9,8 @@ export WORKDIR=`pwd`
 export OPENSSL_CONF="${WORKDIR}/openssl.conf"
 export CA_DIR=${WORKDIR}/CA
 
+# backup old CA (need in case plugin re-install or CA re-creation)
+test -d ${CA_DIR} && mv -f ${CA_DIR} ${CA_DIR}_$(date +%Y%m%d_%H_%M_%S)
 mkdir -p ${WORKDIR}
 mkdir -p ${CA_DIR}
 

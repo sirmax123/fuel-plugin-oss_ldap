@@ -28,9 +28,9 @@
       type: parallel
 
 
-- id: oss_ldap-hosts
+- id: oss_ldap-ldap_hosts
   type: puppet
-  groups: [*]
+  groups: [primary-oss_ldap, oss_ldap]
   required_for: [deploy_end]
   requires: [cluster-haproxy]
   parameters:
