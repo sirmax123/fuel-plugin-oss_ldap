@@ -1,4 +1,4 @@
-notice('MODULAR: 103')
+notice('MODULAR: 102_configure_replica_objects.pp')
 
 
 include ::ldap_config
