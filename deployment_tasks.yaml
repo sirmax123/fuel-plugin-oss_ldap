@@ -40,10 +40,6 @@
   reexecute_on:
     - deploy_changes
 
-
-
-# This task needs to be reexecuted to adapt configuration variables depending
-# on the number of nodes in the cluster
 - id: oss_ldap-hiera
   type: puppet
   groups: [primary-oss_ldap, oss_ldap]
@@ -106,12 +102,6 @@
     - deploy_changes
 
 
-
-
-
-
-
-
 - id: oss_ldap-provision-services
   type: puppet
   role: [primary-oss_ldap]
@@ -132,6 +122,59 @@
   required_for: [post_deployment_end]
   parameters:
     puppet_manifest: "puppet/manifests/enable_quorum.pp"
+    puppet_modules: "puppet/modules:/etc/puppet/modules"
+    timeout: 120
+  reexecute_on:
+    - deploy_changes
+
+
+- id: oss_ldap-101_install_openldap_server
+  type: puppet
+  role: [primary-oss_ldap]
+  requires: [oss_ldap-enable-quorum]
+  required_for: [post_deployment_end]
+  parameters:
+    puppet_manifest: "puppet/manifests/101_install_openldap_server.pp"
+    puppet_modules: "puppet/modules:/etc/puppet/modules"
+    timeout: 120
+  reexecute_on:
+    - deploy_changes
+
+
+
+- id: oss_ldap-102_configure_replica_objects
+  type: puppet
+  role: [primary-oss_ldap]
+  requires: [oss_ldap-101_install_openldap_server]
+  required_for: [post_deployment_end]
+  parameters:
+    puppet_manifest: "puppet/manifests/102_configure_replica_objects.pp"
+    puppet_modules: "puppet/modules:/etc/puppet/modules"
+    timeout: 120
+  reexecute_on:
+    - deploy_changes
+
+
+- id: oss_ldap-103_populate_ldap_customers_organization
+  type: puppet
+  role: [primary-oss_ldap]
+  requires: [oss_ldap-102_configure_replica_objects]
+  required_for: [post_deployment_end]
+  parameters:
+    puppet_manifest: "puppet/manifests/103_populate_ldap_customers_organization.pp"
+    puppet_modules: "puppet/modules:/etc/puppet/modules"
+    timeout: 120
+  reexecute_on:
+    - deploy_changes
+
+
+- id: oss_ldap-104_populate_ldap_people_ou
+  type: puppet
+  role: [primary-oss_ldap]
+  requires: [oss_ldap-103_populate_ldap_customers_organization]
+  required_for: [post_deployment_end]
+  parameters:
+    puppet_manifest: "puppet/manifests/104_populate_ldap_people_ou.pp"
     puppet_modules: "puppet/modules:/etc/puppet/modules"
     timeout: 120
   reexecute_on:

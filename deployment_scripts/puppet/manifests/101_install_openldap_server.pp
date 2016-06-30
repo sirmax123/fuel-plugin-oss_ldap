@@ -1,14 +1,12 @@
 notice('MODULAR: 101_install_openldap.pp')
 
-
 include ::ldap_config
-
-notice('DEBUG: ')
 
 $ldap_config_rootpw   =  $::ldap_config::rootpw
 $ldap_config_database = $::ldap_config::database
 
 #Set Server ID (we always have 2 nodes)
+
 $r = hiera("role")
 if "$r" == "primary-oss_ldap"  {
   $ldap_server_id = 1
@@ -74,9 +72,8 @@ class { 'openldap::server':
   },
 }
 
+## need for ldap_entry usage
 
-#
-#file { '/etc/default/slapd':
-#  ensure  => file,
-#  content => template('ldap_config/slapd.erb'),
-#}
+package { 'ruby-net-ldap':
+    ensure => 'installed',
+}
