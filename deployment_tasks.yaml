@@ -128,9 +128,27 @@
     - deploy_changes
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+##############
 - id: oss_ldap-101_install_openldap_server
   type: puppet
-  role: [primary-oss_ldap]
+  role: [primary-oss_ldap, oss_ldap]
   requires: [oss_ldap-enable-quorum]
   required_for: [post_deployment_end]
   parameters:
@@ -144,7 +162,7 @@
 
 - id: oss_ldap-102_configure_replica_objects
   type: puppet
-  role: [primary-oss_ldap]
+  role: [primary-oss_ldap, oss_ldap]
   requires: [oss_ldap-101_install_openldap_server]
   required_for: [post_deployment_end]
   parameters:
@@ -157,7 +175,7 @@
 
 - id: oss_ldap-103_populate_ldap_customers_organization
   type: puppet
-  role: [primary-oss_ldap]
+  role: [primary-oss_ldap, oss_ldap]
   requires: [oss_ldap-102_configure_replica_objects]
   required_for: [post_deployment_end]
   parameters:
@@ -170,7 +188,7 @@
 
 - id: oss_ldap-104_populate_ldap_people_ou
   type: puppet
-  role: [primary-oss_ldap]
+  role: [primary-oss_ldap, oss_ldap]
   requires: [oss_ldap-103_populate_ldap_customers_organization]
   required_for: [post_deployment_end]
   parameters:
@@ -179,3 +197,335 @@
     timeout: 120
   reexecute_on:
     - deploy_changes
+
+- id: oss_ldap-110_configure_replica_objects
+  type: puppet
+  role: [primary-oss_ldap, oss_ldap]
+  requires: [oss_ldap-104_populate_ldap_people_ou]
+  required_for: [post_deployment_end]
+  parameters:
+    puppet_manifest: "puppet/manifests/110_configure_replica_objects.pp"
+    puppet_modules: "puppet/modules:/etc/puppet/modules"
+    timeout: 120
+  reexecute_on:
+    - deploy_changes
+
+
+
+- id: oss_ldap-120_phpldapadmin
+  type: puppet
+  role: [primary-oss_ldap, oss_ldap]
+  requires: [oss_ldap-110_configure_replica_objects]
+  required_for: [post_deployment_end]
+  parameters:
+    puppet_manifest: "puppet/manifests/120_phpldapadmin.pp"
+    puppet_modules: "puppet/modules:/etc/puppet/modules"
+    timeout: 120
+  reexecute_on:
+    - deploy_changes
+
+
+- id: oss_ldap-140_populate_ldap_customers_organization
+  type: puppet
+  role: [primary-oss_ldap]
+  requires: [oss_ldap-120_phpldapadmin]
+  required_for: [post_deployment_end]
+  parameters:
+    puppet_manifest: "puppet/manifests/140_populate_ldap_customers_organization.pp"
+    puppet_modules: "puppet/modules:/etc/puppet/modules"
+    timeout: 120
+  reexecute_on:
+    - deploy_changes
+
+
+
+- id: oss_ldap-150_populate_ldap_people_ou
+  type: puppet
+  role: [primary-oss_ldap]
+  requires: [140_populate_ldap_customers_organization]
+  required_for: [post_deployment_end]
+  parameters:
+    puppet_manifest: "puppet/manifests/150_populate_ldap_people_ou.pp"
+    puppet_modules: "puppet/modules:/etc/puppet/modules"
+    timeout: 120
+  reexecute_on:
+    - deploy_changes
+
+
+
+- id: oss_ldap-160_sudo_scheme
+  type: puppet
+  role: [primary-oss_ldap]
+  requires: [oss_ldap-150_populate_ldap_people_ou]
+  required_for: [post_deployment_end]
+  parameters:
+    puppet_manifest: "puppet/manifests/160_sudo_scheme.pp"
+    puppet_modules: "puppet/modules:/etc/puppet/modules"
+    timeout: 120
+  reexecute_on:
+    - deploy_changes
+
+
+
+- id: oss_ldap-165_populate_ldap_sudo_ou
+  type: puppet
+  role: [primary-oss_ldap]
+  requires: [oss_ldap-160_sudo_scheme]
+  required_for: [post_deployment_end]
+  parameters:
+    puppet_manifest: "puppet/manifests/165_populate_ldap_sudo_ou.pp"
+    puppet_modules: "puppet/modules:/etc/puppet/modules"
+    timeout: 120
+  reexecute_on:
+    - deploy_changes
+
+
+
+- id: oss_ldap-166
+  type: puppet
+  role: [primary-oss_ldap]
+  requires: [oss_ldap-165_populate_ldap_sudo_ou]
+  required_for: [post_deployment_end]
+  parameters:
+    puppet_manifest: "puppet/manifests/166.pp"
+    puppet_modules: "puppet/modules:/etc/puppet/modules"
+    timeout: 120
+  reexecute_on:
+    - deploy_changes
+
+
+
+- id: oss_ldap-167
+  type: puppet
+  role: [primary-oss_ldap]
+  requires: [oss_ldap-166]
+  required_for: [post_deployment_end]
+  parameters:
+    puppet_manifest: "puppet/manifests/167.pp"
+    puppet_modules: "puppet/modules:/etc/puppet/modules"
+    timeout: 120
+  reexecute_on:
+    - deploy_changes
+
+
+
+
+
+
+
+- id: oss_ldap-170
+  type: puppet
+  role: [primary-oss_ldap]
+  requires: [oss_ldap-167]
+  required_for: [post_deployment_end]
+  parameters:
+    puppet_manifest: "puppet/manifests/170.pp"
+    puppet_modules: "puppet/modules:/etc/puppet/modules"
+    timeout: 120
+  reexecute_on:
+    - deploy_changes
+
+
+
+
+
+- id: oss_ldap-171
+  type: puppet
+  role: [primary-oss_ldap]
+  requires: [oss_ldap-170]
+  required_for: [post_deployment_end]
+  parameters:
+    puppet_manifest: "puppet/manifests/171.pp"
+    puppet_modules: "puppet/modules:/etc/puppet/modules"
+    timeout: 120
+  reexecute_on:
+    - deploy_changes
+
+
+
+
+
+- id: oss_ldap-172
+  type: puppet
+  role: [primary-oss_ldap]
+  requires: [oss_ldap-171]
+  required_for: [post_deployment_end]
+  parameters:
+    puppet_manifest: "puppet/manifests/172.pp"
+    puppet_modules: "puppet/modules:/etc/puppet/modules"
+    timeout: 120
+  reexecute_on:
+    - deploy_changes
+
+
+
+
+- id: oss_ldap-173
+  type: puppet
+  role: [primary-oss_ldap]
+  requires: [oss_ldap-172]
+  required_for: [post_deployment_end]
+  parameters:
+    puppet_manifest: "puppet/manifests/173.pp"
+    puppet_modules: "puppet/modules:/etc/puppet/modules"
+    timeout: 120
+  reexecute_on:
+    - deploy_changes
+
+
+
+- id: oss_ldap-174
+  type: puppet
+  role: [primary-oss_ldap]
+  requires: [oss_ldap-173]
+  required_for: [post_deployment_end]
+  parameters:
+    puppet_manifest: "puppet/manifests/174.pp"
+    puppet_modules: "puppet/modules:/etc/puppet/modules"
+    timeout: 120
+  reexecute_on:
+    - deploy_changes
+
+
+
+
+
+- id: oss_ldap-180
+  type: puppet
+  role: [primary-oss_ldap]
+  requires: [oss_ldap-174]
+  required_for: [post_deployment_end]
+  parameters:
+    puppet_manifest: "puppet/manifests/180.pp"
+    puppet_modules: "puppet/modules:/etc/puppet/modules"
+    timeout: 120
+  reexecute_on:
+    - deploy_changes
+
+
+
+
+- id: oss_ldap-181
+  type: puppet
+  role: [primary-oss_ldap]
+  requires: [oss_ldap-180]
+  required_for: [post_deployment_end]
+  parameters:
+    puppet_manifest: "puppet/manifests/181.pp"
+    puppet_modules: "puppet/modules:/etc/puppet/modules"
+    timeout: 120
+  reexecute_on:
+    - deploy_changes
+
+
+
+
+
+- id: oss_ldap-182
+  type: puppet
+  role: [primary-oss_ldap]
+  requires: [oss_ldap-181]
+  required_for: [post_deployment_end]
+  parameters:
+    puppet_manifest: "puppet/manifests/182.pp"
+    puppet_modules: "puppet/modules:/etc/puppet/modules"
+    timeout: 120
+  reexecute_on:
+    - deploy_changes
+
+
+
+
+- id: oss_ldap-183
+  type: puppet
+  role: [primary-oss_ldap]
+  requires: [oss_ldap-182]
+  required_for: [post_deployment_end]
+  parameters:
+    puppet_manifest: "puppet/manifests/183.pp"
+    puppet_modules: "puppet/modules:/etc/puppet/modules"
+    timeout: 120
+  reexecute_on:
+    - deploy_changes
+
+
+
+
+- id: oss_ldap-185
+  type: puppet
+  role: [primary-oss_ldap]
+  requires: [oss_ldap-183]
+  required_for: [post_deployment_end]
+  parameters:
+    puppet_manifest: "puppet/manifests/185.pp"
+    puppet_modules: "puppet/modules:/etc/puppet/modules"
+    timeout: 120
+  reexecute_on:
+    - deploy_changes
+
+
+
+- id: oss_ldap-190
+  type: puppet
+  role: [primary-oss_ldap]
+  requires: [oss_ldap-185]
+  required_for: [post_deployment_end]
+  parameters:
+    puppet_manifest: "puppet/manifests/190.pp"
+    puppet_modules: "puppet/modules:/etc/puppet/modules"
+    timeout: 120
+  reexecute_on:
+    - deploy_changes
+
+
+
+
+- id: oss_ldap-193
+  type: puppet
+  role: [primary-oss_ldap]
+  requires: [oss_ldap-190]
+  required_for: [post_deployment_end]
+  parameters:
+    puppet_manifest: "puppet/manifests/193.pp"
+    puppet_modules: "puppet/modules:/etc/puppet/modules"
+    timeout: 120
+  reexecute_on:
+    - deploy_changes
+
+
+- id: oss_ldap-200
+  type: puppet
+  role: [primary-oss_ldap]
+  requires: [oss_ldap-193]
+  required_for: [post_deployment_end]
+  parameters:
+    puppet_manifest: "puppet/manifests/200.pp"
+    puppet_modules: "puppet/modules:/etc/puppet/modules"
+    timeout: 120
+  reexecute_on:
+    - deploy_changes
+
+
+
+- id: oss_ldap-900
+  type: puppet
+  role: [primary-oss_ldap]
+  requires: [oss_ldap-110_configure_replica_objects]
+  required_for: [post_deployment_end]
+  parameters:
+    puppet_manifest: "puppet/manifests/185.pp"
+    puppet_modules: "puppet/modules:/etc/puppet/modules"
+    timeout: 120
+  reexecute_on:
+    - deploy_changes
+
+900.pp
+
+
+
+
+
+
+
+
+
