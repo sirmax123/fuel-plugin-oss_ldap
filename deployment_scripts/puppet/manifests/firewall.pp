@@ -68,6 +68,12 @@ firewall { '101 phpldapadmin':
   action => 'accept',
 }
 
+firewall { '102 phpldapadmin_ssl':
+  port   => 443,
+  proto  => 'tcp',
+  action => 'accept',
+}
+
 #firewall { '999 drop all other requests':
 #  proto  => 'all',
 #  chain  => 'INPUT',

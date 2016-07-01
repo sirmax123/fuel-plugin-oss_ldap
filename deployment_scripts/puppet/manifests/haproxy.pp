@@ -42,7 +42,27 @@ openstack::ha::haproxy_service { 'oss_ldap':
     'timeout client' => '28801s'
   },
   balancermember_options => 'check inter 20s fastinter 2s downinter 2s rise 3 fall 3',
-
 }
 
+# Options for HAProxuy for phpldapadmin must be fixed
 
+openstack::ha::haproxy_service { 'phpldapadmin':
+    order               => '930',
+    listen_port         => '80',
+    balancermember_port => '80',
+    haproxy_config_options => {
+      'mode'                => 'http',
+      'balance'             => 'first',
+    },
+  }
+
+
+openstack::ha::haproxy_service { 'phpldapadmin_ssl':
+    order               => '940',
+    listen_port         => '443',
+    balancermember_port => '443',
+    haproxy_config_options => {
+      'mode'                => 'tcp',
+      'balance'             => 'first',
+    },
+  }
