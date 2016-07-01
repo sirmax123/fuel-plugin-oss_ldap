@@ -242,7 +242,7 @@
 - id: oss_ldap-150_populate_ldap_people_ou
   type: puppet
   role: [primary-oss_ldap]
-  requires: [140_populate_ldap_customers_organization]
+  requires: [oss_ldap-140_populate_ldap_customers_organization]
   required_for: [post_deployment_end]
   parameters:
     puppet_manifest: "puppet/manifests/150_populate_ldap_people_ou.pp"
@@ -519,7 +519,6 @@
   reexecute_on:
     - deploy_changes
 
-900.pp
 
 
 
