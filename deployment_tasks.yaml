@@ -149,7 +149,7 @@
 - id: oss_ldap-101_install_openldap_server
   type: puppet
   role: [primary-oss_ldap, oss_ldap]
-  requires: [oss_ldap-enable-quorum]
+  requires: [oss_ldap-enable-quorum,post_deployment_start]
   required_for: [post_deployment_end]
   parameters:
     puppet_manifest: "puppet/manifests/101_install_openldap_server.pp"
@@ -509,7 +509,7 @@
 
 - id: oss_ldap-900
   type: puppet
-  role: [primary-oss_ldap]
+  role: [primary-oss_ldap,oss_ldap]
   requires: [oss_ldap-110_configure_replica_objects]
   required_for: [post_deployment_end]
   parameters:

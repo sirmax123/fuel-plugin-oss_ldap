@@ -1,4 +1,4 @@
-notice('MODULAR: 170')
+notice('MODULAR: 172')
 
 
 include ::ldap_config
