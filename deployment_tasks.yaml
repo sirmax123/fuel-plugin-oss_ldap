@@ -420,26 +420,10 @@
 
 
 
-
-- id: oss_ldap-182
-  type: puppet
-  role: [primary-oss_ldap]
-  requires: [oss_ldap-181]
-  required_for: [post_deployment_end]
-  parameters:
-    puppet_manifest: "puppet/manifests/182.pp"
-    puppet_modules: "puppet/modules:/etc/puppet/modules"
-    timeout: 120
-  reexecute_on:
-    - deploy_changes
-
-
-
-
 - id: oss_ldap-183
   type: puppet
   role: [primary-oss_ldap]
-  requires: [oss_ldap-182]
+  requires: [oss_ldap-181]
   required_for: [post_deployment_end]
   parameters:
     puppet_manifest: "puppet/manifests/183.pp"
@@ -509,11 +493,24 @@
 
 - id: oss_ldap-900
   type: puppet
-  role: [primary-oss_ldap,oss_ldap]
+  role: [oss_ldap]
   requires: [oss_ldap-110_configure_replica_objects]
   required_for: [post_deployment_end]
   parameters:
-    puppet_manifest: "puppet/manifests/185.pp"
+    puppet_manifest: "puppet/manifests/900.pp"
+    puppet_modules: "puppet/modules:/etc/puppet/modules"
+    timeout: 120
+  reexecute_on:
+    - deploy_changes
+
+
+- id: oss_ldap-900-primary
+  type: puppet
+  role: [primary-oss_ldap]
+  requires: [oss_ldap-110_configure_replica_objects]
+  required_for: [post_deployment_end]
+  parameters:
+    puppet_manifest: "puppet/manifests/900.pp"
     puppet_modules: "puppet/modules:/etc/puppet/modules"
     timeout: 120
   reexecute_on:
