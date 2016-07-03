@@ -1,1 +1,17 @@
-[]
+- role: [oss_ldap]
+  stage: post_deployment/9000
+  type: puppet
+  parameters:
+    puppet_manifest: "puppet/manifests/900.pp"
+    puppet_modules: "puppet/modules:/etc/puppet/modules"
+    timeout: 120
+#
+#
+- role: [primary-oss_ldap]
+  stage: post_deployment/8000
+  type: puppet
+  parameters:
+    puppet_manifest: "puppet/manifests/900.pp"
+    puppet_modules: "puppet/modules:/etc/puppet/modules"
+    timeout: 120
+
